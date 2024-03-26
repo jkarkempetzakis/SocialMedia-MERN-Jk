@@ -3,7 +3,7 @@ import { useCallback } from "react";
 
 const useShowToast = () => {
     const toast = useToast();
-
+    // using useCallback here to cache the function, so there are no crashes 
     const showToast = useCallback(
         (title, description, status) => {
             toast({
