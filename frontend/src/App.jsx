@@ -9,6 +9,7 @@ import LogoutButton from './components/LogoutButton'
 import CreatePost from "./components/CreatePost";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import Header from "./components/Header";
 function App() {
   const user = useRecoilValue(userAtom);
 
@@ -19,6 +20,7 @@ function App() {
 
 
         <Container maxW={"620px"}>
+          <Header />
           <Routes>
             <Route path='/' element={user ? <HomePage /> : <Navigate to='/auth' />} />
             <Route path='/auth' element={!user ? <AuthPage /> : <Navigate to='/' />} />
