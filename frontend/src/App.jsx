@@ -5,6 +5,7 @@ import AuthPage from "./pages/AuthPage";
 import userAtom from "./atoms/userAtom";
 import HomePage from "./pages/HomePage";
 import UserPage from "./pages/UserPage";
+import CreatePost from "./components/CreatePost";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 function App() {
@@ -27,7 +28,7 @@ function App() {
                 user ? (
                   <>
                     <UserPage />
-                    {/* <CreatePost /> */}
+                    <CreatePost />
                   </>
                 ) : (
                   <UserPage />
@@ -35,6 +36,7 @@ function App() {
               }
             />
           </Routes>
+          <CreatePost />
 
         </Container>
       </Box>
