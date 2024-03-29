@@ -2,38 +2,74 @@ import { useEffect, useState } from "react";
 import UserHeader from "../components/UserHeader";
 import { useParams } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
-import { Flex, Spinner } from "@chakra-ui/react";
+import { Flex, Spinner, Text } from "@chakra-ui/react";
 import Post from "../components/Post";
 import useGetUserProfile from "../hooks/useGetUserProfile";
 import { useRecoilState } from "recoil";
 import postsAtom from "../atoms/postsAtom";
+import Reply from "../components/Reply";
 
 const UserPage = () => {
     const { user, loading } = useGetUserProfile();
     const { username } = useParams();
     const showToast = useShowToast();
     const [posts, setPosts] = useRecoilState(postsAtom);
+    const [replies, setReplies] = useState([])
     const [fetchingPosts, setFetchingPosts] = useState(true);
+    const [fetchingReplies, setFetchingReplies] = useState(false);
+    const [showReplies, setShowReplies] = useState(false);
+
 
     useEffect(() => {
-        const getPosts = async () => {
+        const getPostsOrReplies = async () => {
             if (!user) return;
-            setFetchingPosts(true);
-            try {
-                const res = await fetch(`/api/posts/user/${username}`);
-                const data = await res.json();
-                console.log(data);
-                setPosts(data);
-            } catch (error) {
-                showToast("Error", error.message, "error");
-                setPosts([]);
-            } finally {
-                setFetchingPosts(false);
+            // setFetchingPosts(true);
+            if (fetchingPosts) {
+                try {
+                    const res = await fetch(`/api/posts/user/${username}`);
+                    const data = await res.json();
+                    console.log(data);
+                    setPosts(data);
+                } catch (error) {
+                    showToast("Error", error.message, "error");
+                    setPosts([]);
+                } finally {
+                    setFetchingPosts(false);
+                }
+            } if (fetchingReplies) {
+                console.log("getting replies");
+                try {
+                    const res = await fetch(`/api/posts/reply/user/${username}`);
+                    const data = await res.json();
+                    console.log(data);
+                    setReplies(data);
+                    console.log("this is the " + replies)
+                } catch (error) {
+                    showToast("Error", error.message, "error");
+                    setPosts([]);
+                } finally {
+                    setFetchingReplies(false);
+                }
             }
+
         };
 
-        getPosts();
-    }, [username, showToast, setPosts, user]);
+        getPostsOrReplies();
+    }, [username, showToast, setPosts, user, showReplies]);
+
+
+
+
+    const handleClickThreads = () => {
+
+        setFetchingPosts(true);
+        setShowReplies(false)
+    };
+
+    const handleClickReplies = () => {
+        setFetchingReplies(true);
+        setShowReplies(true);
+    };
 
     if (!user && loading) {
         return (
@@ -48,6 +84,26 @@ const UserPage = () => {
     return (
         <>
             <UserHeader user={user} />
+            <Flex w={"full"}>
+                <Flex flex={1}
+                    borderBottom={!showReplies ? "1.5px solid white" : "1px solid gray"}
+                    justifyContent={"center"}
+                    pb='3'
+                    cursor={"pointer"}
+                    onClick={handleClickThreads}>
+                    <Text fontWeight={"bold"}> Threads</Text>
+                </Flex>
+                <Flex
+                    flex={1}
+                    borderBottom={showReplies ? "1.5px solid white" : "1px solid gray"}
+                    justifyContent={"center"}
+                    pb='3'
+                    cursor={"pointer"}
+                    onClick={handleClickReplies}
+                >
+                    <Text fontWeight={"bold"}> Replies</Text>
+                </Flex>
+            </Flex>
 
             {!fetchingPosts && posts.length === 0 && <h1>User has no posts.</h1>}
             {fetchingPosts && (
@@ -55,10 +111,31 @@ const UserPage = () => {
                     <Spinner size={"xl"} />
                 </Flex>
             )}
+            {!showReplies && (
+                <>
+                    {posts.map((post) => (
+                        <Post key={post._id} post={post} postedBy={post.postedBy} />
+                    ))}
+                </>
+            )}
+            {showReplies && (
+                <>
+                    {showReplies && (
+                        <>
+                            {replies.flat().map((reply) => (
+                                <Reply key={reply._id} reply={reply} />
+                                // <div key={reply._id}>
+                                //     <p>Reply by: {reply.username}</p>
+                                //     <p>{reply.text}</p>
+                                //     {/* Additional fields of the reply if needed */}
+                                // </div>
+                            ))}
+                        </>
+                    )}
 
-            {posts.map((post) => (
-                <Post key={post._id} post={post} postedBy={post.postedBy} />
-            ))}
+                </>
+            )}
+
         </>
     );
 };

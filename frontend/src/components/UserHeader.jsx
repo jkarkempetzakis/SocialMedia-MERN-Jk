@@ -106,7 +106,7 @@ const UserHeader = ({ user }) => {
                 </Flex>
             </Flex>
 
-            <Flex w={"full"}>
+            {/* <Flex w={"full"}>
                 <Flex flex={1} borderBottom={"1.5px solid white"} justifyContent={"center"} pb='3' cursor={"pointer"}>
                     <Text fontWeight={"bold"}> Threads</Text>
                 </Flex>
@@ -120,7 +120,7 @@ const UserHeader = ({ user }) => {
                 >
                     <Text fontWeight={"bold"}> Replies</Text>
                 </Flex>
-            </Flex>
+            </Flex> */}
         </VStack>
     );
 };
