@@ -2,6 +2,9 @@ import userAtom from "../atoms/userAtom";
 import { useSetRecoilState } from "recoil";
 import useShowToast from "./useShowToast";
 
+/*
+-Logs the user out both by the api call and from the local storage
+*/
 const useLogout = () => {
     const setUser = useSetRecoilState(userAtom);
     const showToast = useShowToast();
@@ -21,7 +24,7 @@ const useLogout = () => {
                 return;
             }
 
-            localStorage.removeItem("user-threads");
+            localStorage.removeItem("user-current");
             setUser(null);
         } catch (error) {
             showToast("Error", error, "error");

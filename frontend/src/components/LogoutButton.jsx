@@ -4,6 +4,7 @@ import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
 import { FiLogOut } from "react-icons/fi";
 
+//Look in the hooks/useLogout for more details
 const LogoutButton = () => {
     const setUser = useSetRecoilState(userAtom);
     const showToast = useShowToast();

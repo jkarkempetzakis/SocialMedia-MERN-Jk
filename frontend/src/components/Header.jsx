@@ -1,15 +1,27 @@
-import { Button, Flex, Image, Link, useColorMode } from "@chakra-ui/react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import userAtom from "../atoms/userAtom";
+//react imports
+import { Link as RouterLink } from "react-router-dom";
 import { AiFillHome } from "react-icons/ai";
 import { RxAvatar } from "react-icons/rx";
-import { Link as RouterLink } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
-import useLogout from "../hooks/useLogout";
-import authScreenAtom from "../atoms/authAtom";
 import { BsFillChatQuoteFill } from "react-icons/bs";
 import { MdOutlineSettings } from "react-icons/md";
 
+//chakra ui+ packages
+import { Button, Flex, Image, Link, useColorMode } from "@chakra-ui/react";
+
+//JSX
+import useLogout from "../hooks/useLogout";
+
+//Recoil
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import userAtom from "../atoms/userAtom";
+import authScreenAtom from "../atoms/authAtom";
+
+
+
+/*
+-Displays icons that are links to different routs on the app
+*/
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const user = useRecoilValue(userAtom);

@@ -1,11 +1,20 @@
+//react imports
+import { BsThreeDots } from "react-icons/bs";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+//chakra ui +packages
 import { Avatar } from "@chakra-ui/avatar";
 import { Image } from "@chakra-ui/image";
 import { Box, Flex, Text } from "@chakra-ui/layout";
-import { BsThreeDots } from "react-icons/bs";
-import { Link } from "react-router-dom";
+//JSX
 import Actions from "./Actions";
-import { useState } from "react";
 
+
+
+
+/*
+-Receives post details as propss
+*/
 const UserPost = ({ postImg, postTitle, likes, replies }) => {
     const [liked, setLiked] = useState(false);
     return (

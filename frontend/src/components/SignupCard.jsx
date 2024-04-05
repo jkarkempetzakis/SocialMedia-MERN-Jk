@@ -1,3 +1,7 @@
+//react imports
+import { useState } from "react";
+
+//chakra ui+packages
 import {
     Flex,
     Box,
@@ -14,13 +18,19 @@ import {
     useColorModeValue,
     Link,
 } from "@chakra-ui/react";
-import { useState } from "react";
+
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+//JSX
+import useShowToast from "../hooks/useShowToast";
+//Recoil
 import { useSetRecoilState } from "recoil";
 import authScreenAtom from "../atoms/authAtom";
-import useShowToast from "../hooks/useShowToast";
 import userAtom from "../atoms/userAtom";
 
+
+/*
+-Passes the data in the inputs to the backend 
+*/
 export default function SignupCard() {
     const [showPassword, setShowPassword] = useState(false);
     const setAuthScreen = useSetRecoilState(authScreenAtom);

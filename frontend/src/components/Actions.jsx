@@ -1,3 +1,6 @@
+//React imports
+import { useState } from "react";
+//Chakra ui+ packages
 import {
     Box,
     Button,
@@ -14,12 +17,20 @@ import {
     Text,
     useDisclosure,
 } from "@chakra-ui/react";
-import { useState } from "react";
+
+//JSX
+import useShowToast from "../hooks/useShowToast";
+//Recoil
 import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
-import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../atoms/postsAtom";
 
+
+/*
+-Handling actions/ interactions with the post
+-Likes/unlikes/replies
+-Share function will be added
+*/
 const Actions = ({ post }) => {
     const user = useRecoilValue(userAtom);
     const [liked, setLiked] = useState(post.likes.includes(user?._id));
@@ -46,7 +57,7 @@ const Actions = ({ post }) => {
             if (data.error) return showToast("Error", data.error, "error");
 
             if (!liked) {
-                // add the id of the current user to post.likes array
+                //adding the id of the current user to post.likes array
                 const updatedPosts = posts.map((p) => {
                     if (p._id === post._id) {
                         return { ...p, likes: [...p.likes, user._id] };
@@ -55,7 +66,7 @@ const Actions = ({ post }) => {
                 });
                 setPosts(updatedPosts);
             } else {
-                // remove the id of the current user from post.likes array
+                //removing the id of the current user from post.likes array
                 const updatedPosts = posts.map((p) => {
                     if (p._id === post._id) {
                         return { ...p, likes: p.likes.filter((id) => id !== user._id) };
@@ -73,6 +84,8 @@ const Actions = ({ post }) => {
         }
     };
 
+    //adds a new reply to the replies array in the corresponding post
+    //resets the modal 
     const handleReply = async () => {
         if (!user) return showToast("Error", "You must be logged in to reply to a post", "error");
         if (isReplying) return;
@@ -88,6 +101,7 @@ const Actions = ({ post }) => {
             const data = await res.json();
             if (data.error) return showToast("Error", data.error, "error");
 
+            //adding new reply to the post replies 
             const updatedPosts = posts.map((p) => {
                 if (p._id === post._id) {
                     return { ...p, replies: [...p.replies, data] };

@@ -1,21 +1,36 @@
+//react imports
+import { Link as RouterLink } from "react-router-dom";
+import { BsInstagram } from "react-icons/bs";
+import { CgMoreO } from "react-icons/cg";
+//chakra ui + packages
 import { Avatar } from "@chakra-ui/avatar";
 import { Box, Flex, Link, Text, VStack } from "@chakra-ui/layout";
 import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
 import { Portal } from "@chakra-ui/portal";
 import { Button, useToast } from "@chakra-ui/react";
-import { BsInstagram } from "react-icons/bs";
-import { CgMoreO } from "react-icons/cg";
+//JSX
+import useFollowUnfollow from "../hooks/useFollowUnfollow";
+//Recoil
 import { useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
-import { Link as RouterLink } from "react-router-dom";
-import useFollowUnfollow from "../hooks/useFollowUnfollow";
 
+
+
+
+
+
+
+/*
+-Light/Dark mode adaptability
+-Gets current user data and renders it
+*/
 const UserHeader = ({ user }) => {
     const toast = useToast();
 
     const currentUser = useRecoilValue(userAtom); // logged in user
     const { handleFollowUnfollow, following, updating } = useFollowUnfollow(user);
 
+    //function to copy profile url
     const copyURL = () => {
         const currentURL = window.location.href;
         navigator.clipboard.writeText(currentURL).then(() => {
@@ -105,22 +120,6 @@ const UserHeader = ({ user }) => {
                     </Box>
                 </Flex>
             </Flex>
-
-            {/* <Flex w={"full"}>
-                <Flex flex={1} borderBottom={"1.5px solid white"} justifyContent={"center"} pb='3' cursor={"pointer"}>
-                    <Text fontWeight={"bold"}> Threads</Text>
-                </Flex>
-                <Flex
-                    flex={1}
-                    borderBottom={"1px solid gray"}
-                    justifyContent={"center"}
-                    color={"gray.light"}
-                    pb='3'
-                    cursor={"pointer"}
-                >
-                    <Text fontWeight={"bold"}> Replies</Text>
-                </Flex>
-            </Flex> */}
         </VStack>
     );
 };

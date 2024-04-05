@@ -10,6 +10,7 @@ import CreatePost from "./components/CreatePost";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Header from "./components/Header";
+import PostPage from "./pages/PostPage";
 function App() {
   const user = useRecoilValue(userAtom);
 
@@ -38,9 +39,10 @@ function App() {
                 )
               }
             />
+            <Route path='/:username/post/:pid' element={<PostPage />} />
           </Routes>
-          <CreatePost />
-          <LogoutButton />
+
+
 
         </Container>
       </Box>

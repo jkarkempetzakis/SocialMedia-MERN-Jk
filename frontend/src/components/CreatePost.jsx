@@ -1,3 +1,9 @@
+//react imports
+import { useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import { BsFillImageFill } from "react-icons/bs";
+
+//chakra ui+ packages
 import { AddIcon } from "@chakra-ui/icons";
 import {
     Button,
@@ -18,29 +24,39 @@ import {
     useColorModeValue,
     useDisclosure,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+
+
+//JSX
 import usePreviewImg from "../hooks/usePreviewImg";
-import { BsFillImageFill } from "react-icons/bs";
+import useShowToast from "../hooks/useShowToast";
+
+//Recoil
 import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
-import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../atoms/postsAtom";
-import { useParams } from "react-router-dom";
 
+
+//Post character limit
 const MAX_CHAR = 500;
 
+/*
+-Text/Image input
+-Uses different states to manage the input data
+-Passes input data to backend via api call and creates the post to db
+*/
 const CreatePost = () => {
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen, onOpen, onClose } = useDisclosure();//used for modal checking, chakra ui 
     const [postText, setPostText] = useState("");
     const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
     const imageRef = useRef(null);
-    const [remainingChar, setRemainingChar] = useState(MAX_CHAR);
+    const [remainingChar, setRemainingChar] = useState(MAX_CHAR); //character tracker
     const user = useRecoilValue(userAtom);
     const showToast = useShowToast();
     const [loading, setLoading] = useState(false);
     const [posts, setPosts] = useRecoilState(postsAtom);
     const { username } = useParams();
 
+    //when the text changes reduces the characters on the counter
     const handleTextChange = (e) => {
         const inputText = e.target.value;
 
@@ -54,6 +70,9 @@ const CreatePost = () => {
         }
     };
 
+
+    //makes the api call to backend to create the post by passing the data from the modal
+    //after successful post the state of the posts is updated and the modal inputs are reset
     const handleCreatePost = async () => {
         setLoading(true);
         try {
@@ -83,6 +102,7 @@ const CreatePost = () => {
             setLoading(false);
         }
     };
+
 
     return (
         <>

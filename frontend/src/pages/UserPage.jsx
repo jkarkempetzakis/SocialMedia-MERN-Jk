@@ -10,12 +10,12 @@ import postsAtom from "../atoms/postsAtom";
 import Reply from "../components/Reply";
 
 const UserPage = () => {
-    const { user, loading } = useGetUserProfile();
+    const { user, loading, setLoading } = useGetUserProfile();
     const { username } = useParams();
     const showToast = useShowToast();
     const [posts, setPosts] = useRecoilState(postsAtom);
     const [replies, setReplies] = useState([])
-    const [fetchingPosts, setFetchingPosts] = useState(true);
+    const [fetchingPosts, setFetchingPosts] = useState(false);
     const [fetchingReplies, setFetchingReplies] = useState(false);
     const [showReplies, setShowReplies] = useState(false);
 
@@ -23,7 +23,8 @@ const UserPage = () => {
     useEffect(() => {
         const getPostsOrReplies = async () => {
             if (!user) return;
-            // setFetchingPosts(true);
+            setFetchingPosts(true);
+            setLoading(true);
             if (fetchingPosts) {
                 try {
                     const res = await fetch(`/api/posts/user/${username}`);
@@ -35,6 +36,7 @@ const UserPage = () => {
                     setPosts([]);
                 } finally {
                     setFetchingPosts(false);
+                    setLoading(false)
                 }
             } if (fetchingReplies) {
                 console.log("getting replies");
@@ -49,6 +51,7 @@ const UserPage = () => {
                     setPosts([]);
                 } finally {
                     setFetchingReplies(false);
+                    setLoading(false)
                 }
             }
 
@@ -64,18 +67,24 @@ const UserPage = () => {
 
         setFetchingPosts(true);
         setShowReplies(false)
+
     };
 
     const handleClickReplies = () => {
         setFetchingReplies(true);
         setShowReplies(true);
+
+
     };
 
     if (!user && loading) {
+
         return (
-            <Flex justifyContent={"center"}>
-                <Spinner size={"xl"} />
-            </Flex>
+            <></>
+            // <Flex justifyContent={"center"}>
+            //     <p>I am runnning</p>
+            //     <Spinner size={"xl"} />
+            // </Flex>
         );
     }
 
@@ -106,8 +115,9 @@ const UserPage = () => {
             </Flex>
 
             {!fetchingPosts && posts.length === 0 && <h1>User has no posts.</h1>}
-            {fetchingPosts && (
+            {loading && (
                 <Flex justifyContent={"center"} my={12}>
+                    I am ruining
                     <Spinner size={"xl"} />
                 </Flex>
             )}

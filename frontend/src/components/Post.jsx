@@ -1,16 +1,29 @@
+//react imports
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+//chakra ui adn other packages
 import { Avatar } from "@chakra-ui/avatar";
 import { Image } from "@chakra-ui/image";
 import { Box, Flex, Text } from "@chakra-ui/layout";
-import { Link, useNavigate } from "react-router-dom";
-import Actions from "./Actions";
-import { useEffect, useState } from "react";
-import useShowToast from "../hooks/useShowToast";
-import { formatDistanceToNow } from "date-fns";
 import { DeleteIcon } from "@chakra-ui/icons";
+import { formatDistanceToNow } from "date-fns";
+
+//JSX
+import Actions from "./Actions";
+import useShowToast from "../hooks/useShowToast";
+
+
+//recoil
 import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import postsAtom from "../atoms/postsAtom";
 
+
+/*
+-Takes the post and postedBy= user id that made the post as props
+-gets the user profile to display the user information 
+*/
 const Post = ({ post, postedBy }) => {
     const [user, setUser] = useState(null);
     const showToast = useShowToast();
@@ -37,6 +50,7 @@ const Post = ({ post, postedBy }) => {
         getUser();
     }, [postedBy, showToast]);
 
+    //deleting post with api call
     const handleDeletePost = async (e) => {
         try {
             e.preventDefault();
@@ -58,6 +72,8 @@ const Post = ({ post, postedBy }) => {
     };
 
     if (!user) return null;
+    //currently rendering only 3 responses
+    //linking to post page
     return (
         <Link to={`/${user.username}/post/${post._id}`}>
             <Flex gap={3} mb={4} py={5}>

@@ -1,3 +1,7 @@
+//react imports
+import { useState } from "react";
+//chakra ui +packages
+
 import {
     Flex,
     Box,
@@ -13,13 +17,20 @@ import {
     useColorModeValue,
     Link,
 } from "@chakra-ui/react";
-import { useState } from "react";
+
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+//JSX
+import useShowToast from "../hooks/useShowToast";
+//Recoil
 import { useSetRecoilState } from "recoil";
 import authScreenAtom from "../atoms/authAtom";
-import useShowToast from "../hooks/useShowToast";
 import userAtom from "../atoms/userAtom";
 
+
+/*
+-Makes an api call, passing the login inputs 
+-Light/dark mode adaptability
+*/
 export default function LoginCard() {
     const [showPassword, setShowPassword] = useState(false);
     //gives the setter function from recoil

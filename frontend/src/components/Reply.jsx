@@ -1,10 +1,16 @@
-import { Avatar, Divider, Flex, Text } from "@chakra-ui/react";
+import { Avatar, Divider, Flex, Text, Box } from "@chakra-ui/react";
 import postsAtom from "../atoms/postsAtom";
 import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
+import { Link, useNavigate } from "react-router-dom";
 
 
-
+/*
+-Takes a reply as prop and based on its id finds the user that made the reply
+-Displays replies the replies of the user
+-Finds the user that made the post via api call
+-Links to the post the user has replied to
+*/
 const Reply = ({ reply }) => {
 
     const showToast = useShowToast();
@@ -12,12 +18,13 @@ const Reply = ({ reply }) => {
     const [fetchingPosts, setFetchingPosts] = useState(true);
     const [replyingToPost, setReplyingToPost] = useState(null);
 
+    //will run every time the reply id changes, basically for every reply
     useEffect(() => {
         const getUser = async () => {
             try {
                 const res = await fetch(`/api/users/reply/${reply?._id}`);
                 const data = await res.json();
-                console.log(data)
+
                 if (data.error) {
                     showToast("Error", data.error, "error");
                     return;
@@ -33,13 +40,13 @@ const Reply = ({ reply }) => {
     }, [reply?._id, showToast]);
 
 
-
+    //this also runs every time the reply id changes so again for every reply
     useEffect(() => {
         const getPosts = async () => {
 
             setFetchingPosts(true);
             try {
-                console.log("trying");
+
                 const res = await fetch(`/api/posts/reply/${reply?._id}`);
                 const data = await res.json();
 
@@ -88,9 +95,35 @@ const Reply = ({ reply }) => {
                         <Text>Loading...</Text>
                     ) : replyingToPost && user ? (
                         <>
-                            <Text>{user.username + "'s post."}</Text></>
+                            <Link to={`/${user.username}/post/${replyingToPost[0]._id}`}>
+                                <Box borderRadius={7} overflow={"hidden"} border={"1px solid"} borderColor={"gray.light"} p={2}>
+                                    <Flex gap={1} w={"full"} flexDirection={"column"} alignItems={"center"}  >
+                                        {user.profilePic && (
+                                            <Avatar
+                                                name={user.name}
+                                                src={user.profilePic}
+                                                size={
+                                                    "sm"}
+                                            />
+                                        )}
+                                        {!user.profilePic && (
+                                            <Avatar
+                                                name={user.name}
+                                                src='https://bit.ly/broken-link'
+                                                size={
+                                                    "sm"
 
-                        //<Text>{user.username + "" + replyingToPost[0].text}</Text>
+                                                }
+                                            />
+                                        )}
+
+                                        <Text>{user.username + "'s post."}</Text>
+                                    </Flex>
+                                </Box>
+
+                            </Link>
+                        </>
+
                     ) : (
                         <Text>Post not found</Text>
                     )}
