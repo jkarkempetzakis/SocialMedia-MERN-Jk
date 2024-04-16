@@ -90,6 +90,7 @@ const CreatePost = () => {
                 return;
             }
             showToast("Success", "Post created successfully", "success");
+            //checking if the user is in their profile page or not
             if (username === user.username) {
                 setPosts([data, ...posts]);
             }
