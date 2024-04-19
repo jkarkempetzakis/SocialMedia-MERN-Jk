@@ -1,11 +1,14 @@
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 
+import { v2 as cloudinary } from "cloudinary";
+
 //sort of like twitter/threads character limit to post
 const createPost = async (req, res) => {
 
     try {
         const { postedBy, text } = req.body;
+        let { img } = req.body;
 
         if (!text || !postedBy) {
             return res.status(400).json({ error: "Postedby and text are both required" })
@@ -23,9 +26,13 @@ const createPost = async (req, res) => {
 
             return res.status(400).json({ error: `Text must be less than ${maxLength}` });
         }
-        const newPost = new Post({ postedBy, text });
-        await newPost.save();
+        if (img) {
+            const uploadedResponse = await cloudinary.uploader.upload(img);
+            img = uploadedResponse.secure_url;
+        }
 
+        const newPost = new Post({ postedBy, text, img });
+        await newPost.save();
         res.status(200).json(newPost);
 
 
@@ -49,6 +56,20 @@ const getPost = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 
+}
+const getPostByReply = async (req, res) => {
+    try {
+        const post = await Post.find({ "replies._id": req.params.id });
+
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+
+        }
+        res.status(200).json(post)
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 }
 
 const deletePost = async (req, res) => {
@@ -142,7 +163,7 @@ const getFeedPosts = async (req, res) => {
 
         const postFeed = await Post.find({ postedBy: { $in: following } }).sort({ createdAt: -1 })
 
-        res.status(200).json(feedPosts);
+        res.status(200).json(postFeed);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -167,4 +188,29 @@ const getUserPosts = async (req, res) => {
     }
 
 }
-export { createPost, getPost, deletePost, likeUnlikePost, replyToPost, getFeedPosts, getUserPosts };
+
+
+const getUserReplies = async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        const user = await User.findOne({ username });
+        const userId = user._id;
+        console.log(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const posts = await Post.find({ "replies.userId": userId });
+        const filteredReplies = posts.map(post => {
+            return post.replies.filter(reply => reply.userId.toString() === userId.toString());
+        });
+
+        // Respond with the replies array
+        res.status(200).json(filteredReplies);
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+export { createPost, getPost, getPostByReply, deletePost, likeUnlikePost, replyToPost, getFeedPosts, getUserPosts, getUserReplies };

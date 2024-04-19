@@ -1,4 +1,4 @@
-import { Box, Container, Flex } from "@chakra-ui/react";
+import { Box, Container, Flex, Divider, position, useBreakpointValue } from "@chakra-ui/react";
 import { useRecoilValue } from "recoil";
 import AuthPage from "./pages/AuthPage";
 import userAtom from "./atoms/userAtom";
@@ -11,10 +11,14 @@ import UpdateProfilePage from "./pages/UpdateProfilePage";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import PostPage from "./pages/PostPage";
+import Profile from "./components/Profile";
 import { SocketContextProvider } from "./context/SocketContext";
+import SuggestedUsers from "./components/SuggestedUsers";
 
 function App() {
   const user = useRecoilValue(userAtom);
+  const { pathname } = useLocation();
+  const isLargeScreen = useBreakpointValue({ base: false, lg: true });
 
   return (
     <Flex>
@@ -22,11 +26,16 @@ function App() {
       <Box>
         {/* Header */}
         <Header />
+
+
+
       </Box>
 
+      {/* <Box w='1px' h={"full"} bg='white' my={2}></Box> */}
       {/* Main Content */}
-      <Flex flex={1} justifyContent="center">
-        <Container maxW={"620px"} p={0} m={8}>
+      <Flex flex={1} justifyContent="center" overflowY="auto" >
+
+        <Container maxW={pathname === "/" ? { base: "620px", md: "900px" } : "620px"} m={8} >
 
           <Routes>
             <Route
@@ -65,7 +74,19 @@ function App() {
             />
           </Routes>
         </Container>
+
+
+
+
       </Flex>
+
+      {user && isLargeScreen && (
+        <Box>
+          <Profile />
+          <SuggestedUsers />
+        </Box>
+      )}
+
     </Flex>
   );
 }

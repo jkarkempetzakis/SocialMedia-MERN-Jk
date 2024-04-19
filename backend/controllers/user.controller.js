@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import generateTokenAndSetCookie from "../utils/generateToken.js";
 import mongoose from "mongoose";
 import Post from "../models/post.model.js"
+import { v2 as cloudinary } from "cloudinary";
 
 const signupUser = async (req, res) => {
 
@@ -101,7 +102,7 @@ const followUnfollowUser = async (req, res) => {
         const userToModify = await User.findById(id);
 
         const currentUser = await User.findById(req.user._id);
-        console.log("trying")
+
 
         if (id === req.user._id.toString()) {
             return res.status(400).json({ error: "You cannot follow yourself!" })
@@ -129,12 +130,13 @@ const followUnfollowUser = async (req, res) => {
 
 
 const updateUserProfile = async (req, res) => {
-    const { name, email, username, password, profilePic, bio } = req.body;
+    const { name, email, username, password, bio } = req.body;
+    let { profilePic } = req.body;
+
     const userId = req.user._id;
     try {
-
         let user = await User.findById(userId);
-        if (!user) return res.status(400).json({ message: "User not found" });
+        if (!user) return res.status(400).json({ error: "User not found" });
 
         if (req.params.id !== userId.toString())
             return res.status(400).json({ error: "You cannot update other user's profile" });
@@ -145,7 +147,16 @@ const updateUserProfile = async (req, res) => {
             user.password = hashedPassword;
         }
 
-        user.name = name || user.name; //updating the user's name, either updated version or if its null keeping it as is
+        if (profilePic) {
+            if (user.profilePic) {
+                await cloudinary.uploader.destroy(user.profilePic.split("/").pop().split(".")[0]);
+            }
+
+            const uploadedResponse = await cloudinary.uploader.upload(profilePic);
+            profilePic = uploadedResponse.secure_url;
+        }
+
+        user.name = name || user.name;
         user.email = email || user.email;
         user.username = username || user.username;
         user.profilePic = profilePic || user.profilePic;
@@ -153,15 +164,31 @@ const updateUserProfile = async (req, res) => {
 
         user = await user.save();
 
-        res.status(200).json({ message: "Profile updated successfully" });
+        // Find all posts that this user replied and update username and userProfilePic fields
+        //To avoid this-> can change the replies in the post model to not have the username and profile picture as fields
+        // and fetch them for each reply dynamically
+        await Post.updateMany(
+            { "replies.userId": userId },
+            {
+                $set: {
+                    "replies.$[reply].username": user.username,
+                    "replies.$[reply].userProfilePic": user.profilePic,
+                },
+            },
+            { arrayFilters: [{ "reply.userId": userId }] }
+        );
 
+        // password should be null in response
+        user.password = null;
 
+        res.status(200).json(user);
     } catch (err) {
         res.status(500).json({ error: err.message });
-        console.log("Error in updateUserProfile:", err.message);
+        console.log("Error in updateUserProfile: ", err.message);
     }
+};
 
-}
+
 
 const getUserProfile = async (req, res) => {
 
@@ -188,6 +215,55 @@ const getUserProfile = async (req, res) => {
         res.status(500).json({ error: err.message });
         console.log("Error in getUserProfile: ", err.message);
     }
+
 };
 
-export { signupUser, loginUser, logoutUser, followUnfollowUser, updateUserProfile, getUserProfile };
+
+const getUserByReply = async (req, res) => {
+    try {
+        const post = await Post.find({ "replies._id": req.params.id });
+
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+
+        }
+        const userId = post[0].postedBy
+        const user = await User.findById({ _id: userId });
+
+        res.status(200).json(user)
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
+const getSuggestedUsers = async (req, res) => {
+    try {
+        // exclude the current user from suggested users array and exclude users that current user is already following
+        const userId = req.user._id;
+
+        const usersFollowedByYou = await User.findById(userId).select("following");
+
+        const users = await User.aggregate([
+            {
+                $match: {
+                    _id: { $ne: userId },
+                },
+            },
+            {
+                $sample: { size: 10 },
+            },
+        ]);
+        const filteredUsers = users.filter((user) => !usersFollowedByYou.following.includes(user._id));
+        const suggestedUsers = filteredUsers.slice(0, 4);
+
+        suggestedUsers.forEach((user) => (user.password = null));
+
+        res.status(200).json(suggestedUsers);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+export { signupUser, loginUser, logoutUser, followUnfollowUser, updateUserProfile, getUserProfile, getUserByReply, getSuggestedUsers };

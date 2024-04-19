@@ -6,10 +6,10 @@ import { RxAvatar } from "react-icons/rx";
 import { FiLogOut } from "react-icons/fi";
 import { BsFillChatQuoteFill, } from "react-icons/bs";
 import { IoIosNotificationsOutline, IoIosNotifications, IoMdNotifications, IoMdNotificationsOutline } from "react-icons/io";
-import { MdOutlineSettings } from "react-icons/md";
+import { MdOutlineSettings, MdDarkMode, MdLightMode } from "react-icons/md";
 
 //chakra ui+ packages
-import { Button, Flex, Image, Link, useColorMode, MenuItem, Menu, MenuButton, MenuList, Icon, Center, Badge, Box, VStack } from "@chakra-ui/react";
+import { Button, Flex, Image, Link, useColorMode, MenuItem, Menu, MenuButton, MenuList, Icon, Center, Badge, Box, VStack, useColorModeValue, Avatar, useMediaQuery } from "@chakra-ui/react";
 
 //JSX
 import useLogout from "../hooks/useLogout";
@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
 import { useSocket } from "../context/SocketContext.jsx";
 import { conversationsAtom, selectedConversationAtom } from "../atoms/messagesAtom";
-
+import Footer from "./Footer.jsx";
 
 
 
@@ -32,6 +32,11 @@ import { conversationsAtom, selectedConversationAtom } from "../atoms/messagesAt
 -Displays icons that are links to different routs on the app
 */
 const Header = () => {
+  const [isLargeScreen, isBetween430And768] = useMediaQuery([
+    "(min-width: 768px)", // Large screen breakpoint
+    "(min-width: 431px) and (max-width: 767px)", // Between 430 and 768 pixels
+    "(max-width: 430px)", // Custom breakpoint for 430 pixels
+  ]);
   const showToast = useShowToast();
   const { colorMode, toggleColorMode } = useColorMode();
   const user = useRecoilValue(userAtom);
@@ -104,66 +109,6 @@ const Header = () => {
   };
 
 
-  // const getNotificationUser = async (senderId) => {
-  //   try {
-  //     const res = await fetch(`/api/users/profile/${senderId}`);
-  //     const data = await res.json();
-  //     console.log("Received user data:", data);
-
-  //     if (data.error) {
-  //       showToast("Error", data.error, "error");
-  //     } else {
-  //       // Check if the user already exists in otherUser state
-  //       const existingUserIndex = otherUser.findIndex(user => user._id === data._id);
-  //       if (existingUserIndex !== -1) {
-  //         // If the user already exists, update their data
-  //         setOtherUser(prevUsers => {
-  //           const updatedUsers = [...prevUsers];
-  //           updatedUsers[existingUserIndex] = data;
-  //           return updatedUsers;
-  //         });
-  //         console.log("Updated otherUser:", otherUser);
-  //       } else {
-  //         // If the user doesn't exist, add them to the state
-  //         setOtherUser(prevUsers => [data, ...prevUsers]);
-  //         console.log("Added new user to otherUser:", [data, ...otherUser]);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     showToast("Error", error, "error");
-  //     console.error("Error fetching user data:", error);
-  //   }
-  // }
-
-  // const setConversation = async (conversationId, senderId, index) => {
-  //   try {
-  //     const res = await fetch(`/api/users/profile/${senderId}`);
-  //     const data = await res.json();
-  //     console.log("Received user data:", data);
-
-  //     if (data.error) {
-  //       showToast("Error", data.error, "error");
-  //     } else {
-  //       setSelectedConversation({
-  //         _id: conversationId,
-  //         userId: senderId,
-  //         username: data.username,
-  //         userProfilePic: data.userProfilePic,
-  //         mock: "",
-  //       });
-  //       console.log("Selected conversation set successfully:", {
-  //         _id: conversationId,
-  //         userId: senderId,
-  //         username: data.username,
-  //         userProfilePic: data.userProfilePic,
-  //         mock: "",
-  //       });
-  //     }
-  //   } catch (error) {
-  //     showToast("Error", error.message, "error");
-  //     console.error("Error setting conversation:", error);
-  //   }
-  // };
 
   const setConversation = async (conversationId, senderId, index) => {
     try {
@@ -220,88 +165,7 @@ const Header = () => {
   useEffect(() => {
     console.log("these are the current", unreadMessages);
   }, [otherUser]);
-  // const setConversation = (conversationId, senderId, index) => {
-  //   let user = otherUser[index]
-  //   try {
-  //     setSelectedConversation({
-  //       _id: conversationId,
-  //       userId: senderId,
-  //       username: user.username,
-  //       userProfilePic: user.userProfilePic,
-  //       mock: "",
-  //     });
-  //     console.log("Selected conversation set successfully:", {
-  //       _id: conversationId,
-  //       userId: senderId,
-  //       username: user.username,
-  //       userProfilePic: user.userProfilePic,
-  //       mock: "",
-  //     });
-  //   } catch (error) {
-  //     showToast("Error", error.message, "error");
-  //     console.error("Error setting conversation:", error);
-  //   }
-  // }
 
-
-
-
-
-
-  // const renderMessages = (messages) => {
-
-  //   if (messages.length === 0) {
-  //     return (
-  //       <MenuItem>
-  //         <Center>No New Messages</Center>
-  //       </MenuItem>
-  //     );
-  //   }
-
-
-
-
-
-
-
-
-
-  //   const latestMessages = Object.values(
-  //     unreadMessages.reduce((acc, message) => {
-  //       console.log("Current message:", message);
-  //       console.log("Current accumulator:", acc);
-
-  //       if (!acc[message.conversationId] || acc[message.conversationId].timestamp < message.timestamp) {
-  //         console.log("Updating accumulator with message:", message);
-  //         acc[message.conversationId] = message;
-  //       } else {
-  //         console.log("Not updating accumulator. Existing message is newer.");
-  //       }
-
-  //       console.log("Accumulator after update:", acc);
-  //       return acc;
-  //     }, {})
-  //   );
-
-  //   console.log("Latest messages:", latestMessages);
-
-  //   return latestMessages.map((message, index) => (
-  //     <MenuItem key={index}>
-  //       <Link as={RouterLink} to={`/chat`} onClick={() => handleNotificationClick(message, index)}>
-  //         {otherUser.username}
-  //       </Link>
-  //     </MenuItem>
-  //   ));
-  // }
-
-  //make a state to hold the user object and pass its information 
-
-
-
-
-
-
-  // setUnreadMessages(unreadMessages.filter((n) => n !== message))
 
 
   const handleNotificationClick = async (message, index) => {
@@ -375,87 +239,564 @@ const Header = () => {
 
 
   return (
-    <VStack justifyContent={"space-between"} mt={6} mb='12'>
-      {user && (
-        <Link as={RouterLink} to='/'>
-          <AiFillHome size={24} />
-        </Link>
-      )}
-      {!user && (
-        <Link as={RouterLink} to={"/auth"} onClick={() => setAuthScreen("login")}>
-          Login
-        </Link>
-      )}
+    <>
+      {isLargeScreen ? (
+        <Flex flexDirection={"column"} w="300px" >
+          <Flex mt={'1%'} mb='12' ml={8} p={6} position="fixed">
+            <Image
+              cursor={"pointer"}
+              alt='logo'
+              w={6}
+              src={colorMode === "dark" ? "/light-logo.svg" : "/dark-logo.svg"}
 
-      <Image
-        cursor={"pointer"}
-        alt='logo'
-        w={6}
-        src={colorMode === "dark" ? "/light-logo.svg" : "/dark-logo.svg"}
-        onClick={toggleColorMode}
-      />
+            />
 
-      {user && (
-        <VStack alignItems={"center"} gap={4}>
-          <Link as={RouterLink} to={`/${user.username}`}>
-            <RxAvatar size={24} />
-          </Link>
-          <Link as={RouterLink} to={`/chat`}>
-            <BsFillChatQuoteFill size={20} color={haveUnread ? "red" : ''} />
-          </Link>
-          <Menu>
-            <Box position="relative">
-              <MenuButton mt={2}>
-                {colorMode === "dark" ? <Icon as={IoMdNotificationsOutline} w={6} h={6} /> :
-                  <Icon as={IoMdNotifications} w={6} h={6} />}
-              </MenuButton>
-              {unreadMessages.length > 0 && (
+          </Flex>
+
+
+          <Flex alignItems={"left"} flexDirection={"column"} justifyContent={"space-between"} mt={'7%'} mb='12' gap={10} ml={4} p={6} position="fixed" w="20%">
+
+
+
+
+            {user && (
+              <Box
+
+
+                borderRadius="md"
+                _hover={{
+                  cursor: "pointer",
+                  bg: useColorModeValue("gray.600", "gray.dark"),
+                  color: "white",
+
+                }}
+
+                // border="1px solid transparent" // Initial transparent border
+                // borderRadius="md"
+                p={3} w={'90%'}
+              >
+                <Flex alignItems="center" >
+                  <Link as={RouterLink} to='/' alignItems="center" display="flex" _hover={{ textDecoration: 'none' }}>
+                    <AiFillHome size={30} /><Box ml={2}>Home</Box>
+                  </Link>
+                </Flex>
+              </Box>
+
+            )}
+            {!user && (
+              <div>   <Flex
+                flexDirection="inline-block"
+                w="20%"
+                position="fixed"
+                top="0"
+                zIndex="999"
+                left={'95%'}
+                alignItems="right"
+
+                px={4}
+              >
+                <Button size={"md"} onClick={toggleColorMode} mt={'1%'} mb={"1%"} >
+                  {colorMode === "dark" ? <Icon as={MdLightMode} w={7} h={7} /> : <Icon as={MdDarkMode} w={7} h={7} />}
+                </Button>
+              </Flex>
+                <Flex
+                  flexDirection="inline-block"
+                  w="100%"
+                  position="fixed"
+                  bottom="1"
+                  zIndex="999"
+
+
+                  gap={14}
+                  alignItems="center"
+
+                  px={4}
+                ><Footer /></Flex>
+              </div>
+
+
+            )}
+
+            {user && (
+
+              <Flex alignItems={"left"} flexDirection={"column"} gap={10} >
+
                 <Box
-                  position="absolute"
-                  top="2%"
-                  left="30%"
-                  transform="translate(10%, -10%)"
-                >
-                  <Badge colorScheme="red" borderRadius="full" px={2}>
-                    {unreadMessages.length}
-                  </Badge>
-                </Box>
-              )}
-            </Box>
-            <MenuList>
-              {unreadMessages.length === 0 ? (
-                <MenuItem>
-                  <Center>No New Messages</Center>
-                </MenuItem>
-              ) : unreadMessages.map((message, index) => {
-                console.log("Mapping message:", message);
-                console.log("Message index", index) // Add this console log
-                return (
-                  <MenuItem key={index}>
-                    <Link as={RouterLink} to={`/chat`} onClick={() => handleNotificationClick(message, index)}>
-                      {otherUser.find(user => user._id === message.sender)?.username + " " + message.text || "Unknown User"}
-                    </Link>
-                  </MenuItem>
-                );
-              })
-              }
-            </MenuList>
-          </Menu>
-          <Link as={RouterLink} to={`/settings`}>
-            <MdOutlineSettings size={20} />
-          </Link>
-          <Button size={"xs"} onClick={logout}>
-            <FiLogOut size={20} />
-          </Button>
-        </VStack>
-      )}
 
-      {!user && (
-        <Link as={RouterLink} to={"/auth"} onClick={() => setAuthScreen("signup")}>
-          Sign up
-        </Link>
-      )}
-    </VStack>
+
+                  borderRadius="md"
+                  _hover={{
+                    cursor: "pointer",
+                    bg: useColorModeValue("gray.600", "gray.dark"),
+                    color: "white",
+
+                  }}
+
+                  // border="1px solid transparent" // Initial transparent border
+                  // borderRadius="md"
+                  w={'90%'} p={3}
+                >
+                  <Flex alignItems="center">
+                    <Link as={RouterLink} to={`/${user.username}`} alignItems="center" display="flex" _hover={{ textDecoration: 'none' }}>
+                      <Avatar
+                        size='sm'
+                        name={user?.name}
+                        src={user?.profilePic} /><Box ml={2}>Profile</Box>
+                    </Link>
+
+                  </Flex>
+                </Box>
+
+
+                <Box
+
+
+                  borderRadius="md"
+                  _hover={{
+                    cursor: "pointer",
+                    bg: useColorModeValue("gray.600", "gray.dark"),
+                    color: "white",
+
+                  }}
+
+                  // border="1px solid transparent" // Initial transparent border
+                  // borderRadius="md"
+                  p={3} w={'90%'}
+                >
+
+                  <Flex alignItems="center">
+                    <Link as={RouterLink} to={`/chat`} alignItems="center" display="flex" _hover={{ textDecoration: 'none' }}>
+                      <BsFillChatQuoteFill size={27} />
+                      <Box ml={2}>Messages</Box>
+                    </Link>
+                  </Flex>
+                </Box>
+
+                <Box
+
+
+                  borderRadius="md"
+                  _hover={{
+                    cursor: "pointer",
+                    bg: useColorModeValue("gray.600", "gray.dark"),
+                    color: "white",
+
+                  }}
+
+                  // border="1px solid transparent" // Initial transparent border
+                  // borderRadius="md"
+                  p={3} w={'90%'}
+                >
+                  <Flex alignItems="center">
+                    <Menu>
+                      <Box position="relative" display={"flex"} >
+                        <MenuButton ml={-1}>
+                          <Flex alignItems="center">
+                            {colorMode === "dark" ? <Icon as={IoMdNotificationsOutline} w={8} h={8} /> :
+                              <Icon as={IoMdNotifications} w={8} h={8} />}
+                            <Box ml={2}>Notifications</Box>
+                          </Flex>
+
+                        </MenuButton>
+
+                        {unreadMessages.length > 0 && (
+                          <Box
+                            position="absolute"
+
+
+                            transform="translate(30%, -40%)"
+                          >
+                            <Badge colorScheme="red" borderRadius="full" variant={'solid'} px={2}>
+                              {unreadMessages.length}
+                            </Badge>
+                          </Box>
+                        )}
+                      </Box>
+                      <MenuList>
+                        {unreadMessages.length === 0 ? (
+                          <MenuItem>
+                            <Center>No New Messages</Center>
+                          </MenuItem>
+                        ) : unreadMessages.map((message, index) => {
+                          console.log("Mapping message:", message);
+                          console.log("Message index", index) // Add this console log
+                          return (
+                            <MenuItem key={index}>
+                              <Link as={RouterLink} to={`/chat`} onClick={() => handleNotificationClick(message, index)}>
+                                {otherUser.find(user => user._id === message.sender)?.username + " " + message.text || "Unknown User"}
+                              </Link>
+                            </MenuItem>
+                          );
+                        })
+                        }
+                      </MenuList>
+
+                    </Menu>
+                  </Flex>
+                </Box>
+                <Box
+
+
+                  borderRadius="md"
+                  _hover={{
+                    cursor: "pointer",
+                    bg: useColorModeValue("gray.600", "gray.dark"),
+                    color: "white",
+
+                  }}
+
+                  // border="1px solid transparent" // Initial transparent border
+                  // borderRadius="md"
+                  p={3} w={'90%'}
+                >
+                  <Flex alignItems="center" >
+                    <Link as={RouterLink} to={`/settings`} alignItems="center" display="flex" _hover={{ textDecoration: 'none' }} >
+                      <MdOutlineSettings size={30} /><Box ml={2}>Settings</Box>
+                    </Link>
+                  </Flex>
+                </Box>
+                <Button size={"xs"} onClick={toggleColorMode} w={'10%'} mt={'60%'} ml={'5%'}>
+                  {colorMode === "dark" ? <Icon as={MdDarkMode} w={6} h={6} /> :
+                    <Icon as={MdLightMode} w={6} h={6} />}
+                </Button>
+                <Button size={"xs"} onClick={logout} w={'20%'} mt={'1%'} ml={'5%'}>
+                  <FiLogOut size={20} />
+                </Button>
+
+              </Flex>
+
+
+            )}
+
+
+
+          </Flex>
+          <Box w='1px' h={"100%"} bg='gray.light' my={2} position="fixed" ml={"20%"} />
+        </Flex >
+      ) : isBetween430And768 ? (
+        <>{user && (
+          <Flex
+            flexDirection="inline-block"
+            w="100%"
+            position="fixed"
+            bottom="0"
+            zIndex="999"
+            // bgColor="gray.dark"
+            boxShadow="0px 0px 10px rgba(0, 0, 0, 0.1)"
+            gap={14}
+            bgColor={colorMode === "dark" ? "grey.dark" : "white"}
+
+
+          // borderTop="1px solid #E2E8F0"
+          >
+            <Flex alignItems="center" ml={"10%"}  >
+              <Link as={RouterLink} to='/' alignItems="center" display="flex" _hover={{ textDecoration: 'none' }}>
+                <AiFillHome size={30} />
+              </Link>
+            </Flex>
+            <Flex alignItems="center">
+              <Link as={RouterLink} to={`/${user?.username}`} _hover={{ textDecoration: 'none' }}>
+                <Avatar
+                  size='sm'
+                  name={user?.name}
+                  src={user?.profilePic} />
+              </Link>
+
+            </Flex>
+
+
+
+            <Flex alignItems="center">
+              <Link as={RouterLink} to={`/chat`} alignItems="center" display="flex" _hover={{ textDecoration: 'none' }}>
+                <BsFillChatQuoteFill size={27} />
+
+              </Link>
+            </Flex>
+
+
+
+            <Flex alignItems="center">
+              <Menu>
+                <Box position="relative" display={"flex"} >
+                  <MenuButton ml={-1}>
+                    <Flex alignItems="center">
+                      {colorMode === "dark" ? <Icon as={IoMdNotificationsOutline} w={8} h={8} /> :
+                        <Icon as={IoMdNotifications} w={8} h={8} />}
+
+                    </Flex>
+
+                  </MenuButton>
+
+                  {unreadMessages.length > 0 && (
+                    <Box
+                      position="absolute"
+
+
+                      transform="translate(30%, -40%)"
+                    >
+                      <Badge colorScheme="red" borderRadius="full" variant={'solid'} px={2}>
+                        {unreadMessages.length}
+                      </Badge>
+                    </Box>
+                  )}
+                </Box>
+                <MenuList>
+                  {unreadMessages.length === 0 ? (
+                    <MenuItem>
+                      <Center>No New Messages</Center>
+                    </MenuItem>
+                  ) : unreadMessages.map((message, index) => {
+                    console.log("Mapping message:", message);
+                    console.log("Message index", index) // Add this console log
+                    return (
+                      <MenuItem key={index}>
+                        <Link as={RouterLink} to={`/chat`} onClick={() => handleNotificationClick(message, index)}>
+                          {otherUser.find(user => user._id === message.sender)?.username + " " + message.text || "Unknown User"}
+                        </Link>
+                      </MenuItem>
+                    );
+                  })
+                  }
+                </MenuList>
+
+              </Menu>
+            </Flex>
+
+
+            <Flex alignItems="center" >
+              <Link as={RouterLink} to={`/settings`} _hover={{ textDecoration: 'none' }} >
+                <MdOutlineSettings size={30} />
+              </Link>
+            </Flex>
+
+            <Button size={"xs"} onClick={toggleColorMode} mt={'2%'} mb={"2%"} >
+              {colorMode === "dark" ? <Icon as={MdDarkMode} w={5} h={5} /> :
+                <Icon as={MdLightMode} w={5} h={5} />}
+            </Button>
+            <Button size={"xs"} onClick={logout} mt={'2%'} pt={'5px'} pb={'5px'}>
+              <FiLogOut size={25} />
+            </Button>
+          </Flex >
+
+
+        )}
+          <><Flex
+            flexDirection="inline-block"
+            w="100%"
+            position="fixed"
+            top="0"
+            zIndex="999"
+            // bgColor="gray.dark"
+            boxShadow="0px 0px 10px rgba(0, 0, 0, 0.1)"
+            gap={35}
+            bgColor={colorMode === "dark" ? "grey.dark" : "white"}
+            alignItems={'center'}
+            justifyContent="flex-start" // Align items to the start (top left)
+            px={4} // Add padding to adjust button position
+
+
+
+          // borderTop="1px solid #E2E8F0"
+          > {!user && (
+            <div>  <Flex
+              flexDirection="inline-block"
+              w="20%"
+              position="fixed"
+              top="2"
+              zIndex="999"
+              left={'90%'}
+              alignItems="right"
+
+              px={4}
+            >
+              <Button size={"sm"} onClick={toggleColorMode} mt={'1%'} mb={"1%"} >
+                {colorMode === "dark" ? <Icon as={MdLightMode} w={5} h={5} /> : <Icon as={MdDarkMode} w={5} h={5} />}
+              </Button>
+            </Flex>
+              <Flex justifyContent="center" flex="1"> {/* Centering container for the image */}
+                <Image
+                  cursor={"pointer"}
+                  alt='logo'
+                  w={6}
+                  src={colorMode === "dark" ? "/light-logo.svg" : "/dark-logo.svg"}
+                />
+              </Flex>
+            </div>
+            // <Link as={RouterLink} to={"/auth"} onClick={() => setAuthScreen("login")}>
+
+            // </Link>
+
+          )} </Flex>
+          </>
+
+
+
+
+
+        </>
+
+
+
+
+      ) : (
+        <>{user && (
+          <Flex
+            flexDirection="inline-block"
+            w="100%"
+            position="fixed"
+            bottom="0"
+            zIndex="999"
+            // bgColor="gray.dark"
+            boxShadow="0px 0px 10px rgba(0, 0, 0, 0.1)"
+            gap={10}
+            bgColor={colorMode === "dark" ? "grey.dark" : "white"}
+
+
+          // borderTop="1px solid #E2E8F0"
+          >
+            <Flex alignItems="center" ml={"15%"} mt={'1%'} >
+              <Link as={RouterLink} to='/' alignItems="center" display="flex" _hover={{ textDecoration: 'none' }}>
+                <AiFillHome size={23} />
+              </Link>
+            </Flex>
+            <Flex alignItems="center">
+              <Link as={RouterLink} to={`/${user?.username}`} _hover={{ textDecoration: 'none' }}>
+                <Avatar
+                  size='xs'
+                  name={user?.name}
+                  src={user?.profilePic} />
+              </Link>
+
+            </Flex>
+
+
+
+            <Flex alignItems="center">
+              <Link as={RouterLink} to={`/chat`} alignItems="center" display="flex" _hover={{ textDecoration: 'none' }}>
+                <BsFillChatQuoteFill size={20} />
+
+              </Link>
+            </Flex>
+
+
+
+            <Flex alignItems="center">
+              <Menu>
+                <Box position="relative" display={"flex"} >
+                  <MenuButton ml={-1}>
+                    <Flex alignItems="center">
+                      {colorMode === "dark" ? <Icon as={IoMdNotificationsOutline} w={6} h={6} /> :
+                        <Icon as={IoMdNotifications} w={6} h={6} />}
+
+                    </Flex>
+
+                  </MenuButton>
+
+                  {unreadMessages.length > 0 && (
+                    <Box
+                      position="absolute"
+
+
+                      transform="translate(30%, -40%)"
+                    >
+                      <Badge colorScheme="red" borderRadius="full" variant={'solid'} px={2}>
+                        {unreadMessages.length}
+                      </Badge>
+                    </Box>
+                  )}
+                </Box>
+                <MenuList>
+                  {unreadMessages.length === 0 ? (
+                    <MenuItem>
+                      <Center>No New Messages</Center>
+                    </MenuItem>
+                  ) : unreadMessages.map((message, index) => {
+                    console.log("Mapping message:", message);
+                    console.log("Message index", index) // Add this console log
+                    return (
+                      <MenuItem key={index}>
+                        <Link as={RouterLink} to={`/chat`} onClick={() => handleNotificationClick(message, index)}>
+                          {otherUser.find(user => user._id === message.sender)?.username + " " + message.text || "Unknown User"}
+                        </Link>
+                      </MenuItem>
+                    );
+                  })
+                  }
+                </MenuList>
+
+              </Menu>
+            </Flex>
+
+
+            <Flex alignItems="center" >
+              <Link as={RouterLink} to={`/settings`} _hover={{ textDecoration: 'none' }} >
+                <MdOutlineSettings size={20} />
+              </Link>
+            </Flex>
+
+          </Flex >
+
+
+        )}
+          <><Flex
+            flexDirection="inline-block"
+            w="100%"
+            position="fixed"
+            top="0"
+            zIndex="999"
+            // bgColor="gray.dark"
+            boxShadow="0px 0px 10px rgba(0, 0, 0, 0.1)"
+            gap={35}
+            bgColor={colorMode === "dark" ? "grey.dark" : "white"}
+            alignItems={'center'}
+            justifyContent="flex-start" // Align items to the start (top left)
+            px={4} // Add padding to adjust button position
+
+
+
+          // borderTop="1px solid #E2E8F0"
+          > {!user && (
+            <div>  <Flex
+              flexDirection="inline-block"
+              w="20%"
+              position="fixed"
+              top="2"
+              zIndex="999"
+              left={'90%'}
+              alignItems="right"
+
+              px={4}
+            >
+              <Button size={"sm"} onClick={toggleColorMode} mt={'1%'} mb={"1%"} >
+                {colorMode === "dark" ? <Icon as={MdLightMode} w={5} h={5} /> : <Icon as={MdDarkMode} w={5} h={5} />}
+              </Button>
+            </Flex>
+              <Flex justifyContent="center" flex="1"> {/* Centering container for the image */}
+                <Image
+                  cursor={"pointer"}
+                  alt='logo'
+                  w={6}
+                  src={colorMode === "dark" ? "/light-logo.svg" : "/dark-logo.svg"}
+                />
+              </Flex>
+            </div>
+            // <Link as={RouterLink} to={"/auth"} onClick={() => setAuthScreen("login")}>
+
+            // </Link>
+
+          )} </Flex>
+          </>
+
+
+
+
+
+        </>
+
+      )
+      }
+    </>
+
   );
 };
 

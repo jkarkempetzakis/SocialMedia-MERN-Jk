@@ -89,7 +89,7 @@ const Post = ({ post, postedBy }) => {
                     />
                     <Box w='1px' h={"full"} bg='gray.light' my={2}></Box>
                     <Box position={"relative"} w={"full"}>
-                        {post.replies.length === 0 && <Text textAlign={"center"}>🥱</Text>}
+                        {post.replies.length === 0 && <Text textAlign={"center"}>.</Text>}
                         {post.replies[0] && (
                             <Avatar
                                 size='xs'
