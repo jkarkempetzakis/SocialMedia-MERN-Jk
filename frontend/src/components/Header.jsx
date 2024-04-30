@@ -246,7 +246,8 @@ const Header = () => {
             <Image
               cursor={"pointer"}
               alt='logo'
-              w={6}
+              w={200}
+
               src={colorMode === "dark" ? "/light-logo.svg" : "/dark-logo.svg"}
 
             />
